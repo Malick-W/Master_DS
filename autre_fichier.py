@@ -9,7 +9,7 @@ import time
 
 class MaTache(threading.Thread):
     def __init__(self, n,m,s):
-            threading.Thread.__init__(self)
+        threading.Thread.__init__(self)
                     self.n = n
                             self.m = m
                                     self.s = s
@@ -23,12 +23,6 @@ class MaTache(threading.Thread):
                                                         	        		        	if __name__ == '__main__':
                                                         	        		        	  matache = MaTache(3,"Hello World", 4)
                                                         	        		        	    matache.start()
-
-
-                                                        	        		        	    # question 2
-
-
-
 
 
                                                         	        		        	    
