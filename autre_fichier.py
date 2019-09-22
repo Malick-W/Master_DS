@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # Modification du fichier blabla
+# depuis ma machine 
+
 
 import threading
 import time
