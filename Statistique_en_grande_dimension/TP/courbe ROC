@@ -1,0 +1,63 @@
+## Code Illustration Courbe ROC dans le cadre de la LDA
+
+## Courbe théorique
+
+m0=1
+m1=3
+p=1/2
+s0=1
+s1=1
+curve(dnorm(x,mean=m0,sd=s0),lwd='3',xlim=c(-1,5))
+curve(dnorm(x,mean=m1,sd=s1),add=TRUE,col='2',lwd='3')
+alpha=seq(-1,6,by=0.1)
+R2emeespece=1-pnorm((alpha-m0)/s0) ## Proba d'être classé malade sachant qu'on est sain : faux positif
+unmoinsR1ereespece=1-pnorm((alpha-m1)/s1) ## Proba d'être classé malade sachant qu'on est malade : vrai positif
+plot(R2emeespece,unmoinsR1ereespece,'l',col='2')
+
+## Courbe ROC dans la pratique
+
+## Simulation d'un échantillon d'apprentissage
+p=1/2 ## Proba d'être malade
+n=200 ## nb d'individus
+v=(runif(n)<p) ## malade/pas malade
+nbmal=sum(v==1)
+#pasmal=which(v==0)
+Xmal=rnorm(nbmal,mean=m1,sd=s1)
+Xpasmal=rnorm(n-nbmal,mean=m0,sd=s0)
+## Ensuite 2 solutions, on calcule
+## les estimateurs de m et sigma puis on calcule
+## les probas associées aux lois normales avec
+## les paramètres estimés. Ca donne
+m1chap=mean(Xmal)
+s1chap=sd(Xmal)
+m0chap=mean(Xpasmal)
+s0chap=sd(Xpasmal)
+alpha=seq(-1,6,by=0.1)
+R2emeespece=1-pnorm((alpha-m0chap)/s0chap) ## Proba d'être classé malade sachant qu'on est sain : faux positif
+unmoinsR1ereespece=1-pnorm((alpha-m1chap)/s1chap) ## Proba d'être classé malade sachant qu'on est malade : vrai positif
+plot(R2emeespece,unmoinsR1ereespece,'l',col='2')
+
+# Dans le cas général (d'autres cas de classif binaire), on ne peut
+## pas faire ce qui précède.
+## On trace alors une approx de t--> 1-G(F^{-1}(1-t)) basée
+## sur les fonctions de répartition empirique.
+
+## En pratique, ça consiste à faire défiler le vecteur Xpasmal
+## dans le sens décroissant puis à calculer 1-Gbar()
+
+## le quantile q d'ordre 10% du vecteur Xpasmal puis on lui associe 
+## la proportion d'individus malades dont la valeur X > q.
+p=seq(0.99,0.01,by=-0.01)
+quantpasmal=quantile(Xpasmal,prob=p)
+vraipos=rep(0,length(p))
+for (i in (1:length(p))){
+  vraipos[i]=sum(Xmal>quantpasmal[i]) ## ici, on peut économiser des calculs
+  }
+plot(1-p,vraipos/nbmal,col='2','l')
+
+
+
+
+
+
+
