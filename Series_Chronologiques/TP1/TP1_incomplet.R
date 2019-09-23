@@ -104,10 +104,10 @@ lines(EstM3, type="l", col="magenta")
 lines(EstM4, type="l", col="forestgreen")
 
 # recuperation du signal prive de sa tendance, pour estimer la saisonnalite
-SaisM1 = 
-SaisM2 = 
-SaisM3 = 
-SaisM4 = 
+SaisM1 = LChamp - EstM1
+SaisM2 = LChamp - EstM2
+SaisM3 = LChamp - EstM3
+SaisM4 = LChamp - EstM4
 
 # representation des signaux prives de leur tendance
 plot(SaisM1, type="l", xlab="t", ylab="Log Ventes sans tendance", col="red")
@@ -123,21 +123,25 @@ MotifM4 = rep(0, tau)
 
 # on moyennise toutes les periodes extraites des signaux
 for (k in 1:tau){
-  Extr = 
-  MotifM1[k] = 
-  Extr = 
-  MotifM2[k] = 
-  Extr = 
-  MotifM3[k] = 
-  Extr = 
-  MotifM4[k] = 
+  
+  Extr = SaisM1[seq(k,n,by=tau)]
+  MotifM1[k] = mean(Extr)
+  
+  Extr = SaisM2[seq(k,n,by=tau)]
+  MotifM2[k] = mean(Extr)
+  
+  Extr = SaisM3[seq(k,n,by=tau)]
+  MotifM3[k] = mean(Extr)
+    
+  Extr = SaisM4[seq(k,n,by=tau)]
+  MotifM4[k] = mean(Extr)
 }
 
 # on recentre le motif pour qu'il satisfasse la contrainte d'identifiabilite du modele
-MotifM1 = 
-MotifM2 = 
-MotifM3 = 
-MotifM4 = 
+MotifM1 = MotifM1 - mean(MotifM1)
+MotifM2 = MotifM2 - mean(MotifM2)
+MotifM3 = MotifM3 - mean(MotifM3)
+MotifM4 = MotifM4 - mean(MotifM4)
 
 # representation des motifs periodiques estimes
 plot(MotifM1, type="l", xlab="t", ylab="Motif periodique", col="red")
@@ -146,10 +150,10 @@ lines(MotifM3, type="l", col="magenta")
 lines(MotifM4, type="l", col="forestgreen")
 
 # estimation de la saisonnalite par duplication du motif
-EstSaisM1 = 
-EstSaisM2 = 
-EstSaisM3 = 
-EstSaisM4 = 
+EstSaisM1 = rep(MotifM1, n/tau)
+EstSaisM2 = rep(MotifM2, n/tau)
+EstSaisM3 = rep(MotifM3, n/tau)
+EstSaisM4 = rep(MotifM4, n/tau)
 
 # superposition du signal et de la somme de la tendance et de la saisonnalite estimees
 plot(LChamp, type="l", xlab="t", ylab="Log Ventes")
@@ -159,16 +163,17 @@ lines(EstM3+EstSaisM3, type="l", col="magenta")
 lines(EstM4+EstSaisM4, type="l", col="forestgreen")
 
 # recuperation de la fluctuation residuelle
-ResM1 =
-ResM2 =
-ResM3 = 
-ResM4 = 
+ResM1 = LChamp - EstM1 - EstSaisM1
+ResM2 = LChamp - EstM2 - EstSaisM2
+ResM3 = LChamp - EstM3 - EstSaisM3
+ResM4 = LChamp - EstM4 - EstSaisM4
 
 # calcul de l'erreur MSE commise lorsqu'on estime le signal par la somme de sa tendance et de sa saisonnalite
-MSEM1 = 
-MSEM2 = 
-MSEM3 = 
-MSEM4 = 
+MSEM1 = mean(ResM1^2)
+MSEM2 = mean(ResM2^2)
+MSEM3 = mean(ResM3^2)
+MSEM4 = mean(ResM4^2)
+
 
 # le modele M4 semble le meilleur, au sens de ce critere
 # au contraire, le modele M2 semble le moins bon, ce qui etait attendu (la droite est clairement moins adaptee que la parabole pour modeliser la tendance)
@@ -181,20 +186,27 @@ acf(ResM4, main="ACF empirique")
 
 # on souhaite predire l'annee suivante
 NTps = (n+1):(n+tau)
-PredM1 = 
-PredM2 =
-PredM3 = 
-PredM4 = 
+PredM1 = b0M1 + b1M1*NTps + b2M1*NTps^2 + MotifM1
+PredM2 = b0M2 + b1M2*NTps +               MotifM2
+PredM3 = b0M3 + b1M3*NTps + b2M3*NTps^2 + MotifM3
+PredM4 = b0M4 + b1M4*NTps + b2M4*NTps^2 + MotifM4
 
 # representation du signal et de nos previsions par les 4 modeles
 plot(1:n, LChamp, type="l", xlab="t", ylab="Log Ventes", xlim=c(1, n+tau))
 lines((n+1):(n+nsup), ResLChamp, type="l", col="black", lty=2) 
+lines(NTps, PredM4, col="forestgreen")
+lines(NTps, PredM3, col="magenta")
+lines(NTps, PredM2, col="blue")
+lines(NTps, PredM1, col="red")
 
 
 # representation du signal initial et de nos previsions par les 4 modeles
 plot(1:n, Champ, type="l", xlab="t", ylab="Ventes", xlim=c(1, n+tau))
 lines((n+1):(n+nsup), ResChamp, type="l", col="black", lty=2) 
-
+lines(NTps, exp(PredM4), col="forestgreen")
+lines(NTps, exp(PredM3), col="magenta")
+lines(NTps, exp(PredM2), col="blue")
+lines(NTps, exp(PredM1), col="red")
 
 # notre etude montre que la prevision par M4 semble la plus pertinente
 
@@ -202,7 +214,7 @@ lines((n+1):(n+nsup), ResChamp, type="l", col="black", lty=2)
 
 # on illustre pour conclure l'application de la procedure "decompose" qui realise la modelisation additive
 LChampTS = ts(LChamp, frequency=tau)
-Decomp = 
+Decomp = decompose(LChampTS)
 plot(Decomp)
 
 # comparaison entre le motif periodique issu de "decompose" et celui de notre meilleur modele
