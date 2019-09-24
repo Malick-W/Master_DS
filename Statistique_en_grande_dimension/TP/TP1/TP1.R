@@ -6,32 +6,33 @@ alpha=0.9
 beta=0.1
 ntrain=100 ## Echantillon d'entraînement
 ntest=100  ## Echantillon test
+n=ntrain+ntest
 ## Simulation de l'échantillon d'entraînement
 X1train=runif(ntrain)
 X2train=runif(ntrain)
-Xtrain=rbind(X1train,X2train)
+Xtrain=cbind(X1train,X2train)
 dim(Xtrain)
-V=2*X1train+X2train
-iatrain=which(V<1.5)
-ibtrain=which(V>1.5)
-n =100
-Ytrain=rep(0,n)
+V=2*X2train+X1train
+iatrain=which(V<1)
+ibtrain=which(V>1)
+Ytrain=rep(0,ntrain)
 Ytrain[iatrain]=(runif(length(iatrain))<alpha)
-Ytrain[ibtrain]=runif(length(ibtrain))<beta
+Ytrain[ibtrain]=(runif(length(ibtrain))<beta)
 Ytrain
 ictrain=which(Ytrain==1)
 idtrain=which(Ytrain==0)
-plot(X1train[ictrain],X2train[ictrain],pch=1,col='2')
-points(X1train[idtrain],X2train[idtrain],pch=2,col='4')
+plot(X1train[ictrain],X2train[ictrain],pch=1,col='2',lwd='2',ylim=c(0,1),xlim=c(0,1))
+points(X1train[idtrain],X2train[idtrain],pch=2,col='4',lwd='2')
+curve((1-x)/2,add=TRUE)
 ## Echantillon test
 X1test=runif(ntest)
 X2test=runif(ntest)
-Xtest=rbind(X1test,X2test)
+Xtest=cbind(X1test,X2test)
 dim(Xtest)
-V=2*X1test+X2test
-iatest=which(V<1.5)
-ibtest=which(V>1.5)
-Ytest=rep(0,n)
+V=X1test+2*X2test
+iatest=which(V<1)
+ibtest=which(V>1)
+Ytest=rep(0,ntest)
 Ytest[iatest]=(runif(length(iatest))<alpha)
 Ytest[ibtest]=runif(length(ibtest))<beta
 Ytest
@@ -42,27 +43,30 @@ points(X1test[idtest],X2test[idtest],pch=2,col='4')
 ## 1ppv
 errorclassif=rep(0,20)
 for (k in (1:20)){
-predict=knn(t(Xtrain),t(Xtest),Ytrain,k = k,prob = TRUE)
-## Matrice de confusion
-conf=table(predict,Ytest)
-conf
-## Calcul de l'erreur de classification
-errorclassif[k]=(sum(conf)-sum(diag(conf)))/sum(conf)
+  predict=knn(Xtrain,Xtest,Ytrain,k = k,prob = TRUE)
+  
+  ## Matrice de confusion
+  conf=table(predict,Ytest)
+  conf
+  ## Calcul de l'erreur de classification
+  errorclassif[k]=(sum(conf)-sum(diag(conf)))/sum(conf)
 }
 plot(c(1:20),errorclassif,'l')
 ## Validation croisée Leave-One-Out
-cvpred=knn.cv(rbind(t(Xtrain),t(Xtest)),c(Ytrain,Ytest),k=1)
+cvpred=knn.cv(rbind(Xtrain,Xtest),c(Ytrain,Ytest),k=1)
 conf=table(cvpred,c(Ytrain,Ytest))
 conf
+## On pourrait en complément comparer l'erreur de validation croisée
+## et l'erreur test.
 # 5-fold cross-validation to select k
 K=5
 I=sample(1:(ntrain+ntest),replace=FALSE)
 taillefold=(ntrain+ntest)/K
-X=rbind(t(Xtrain),t(Xtest))
+X=rbind(Xtrain,Xtest)
 dim(X)
 Y=c(Ytrain,Ytest)
 cverror=c(1:20)
- # creation des groupes B_v
+# creation des groupes B_v
 for (k in 1:20){
   cverrork=0
   for (v in 0:(K-1)){
@@ -73,13 +77,13 @@ for (k in 1:20){
     cvpred=knn(Xtrain,X[Iv,],Ytrain,k=k)
     conf=table(cvpred,Ytest)
     cverrork=cverrork+ (sum(conf)-sum(diag(conf)))/sum(conf)
-     #cverror=cverror+sum(abs(as.numeric(cvpred)-as.numeric(Ytest)))
+    #cverror=cverror+sum(abs(as.numeric(cvpred)-as.numeric(Ytest)))
   }
   cverror[k]=cverrork/taillefold/K
 }
-plot(c(1:20),cverror,'l')
+plot(c(1:20),cverror,'l',col='2',lwd=2,xlab='k',ylab='cv. Pred. error')
+legend("topright", "Erreur cv", col='2',lwd='2', title = "Evolution de l'Erreur de validation croisée")
 which(cverror==min(cverror))
 min(cverror)
 ## Attention, ce procédé sous-estime probablement la vraie erreur
 ## classif, il faudrait diviser en 3 pour obtenir le bon résultat
-

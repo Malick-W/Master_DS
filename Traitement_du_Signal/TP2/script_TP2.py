@@ -83,6 +83,7 @@ for j in r:
     file.write(j)
 file.close()
 
+#question c:
 
 
 
