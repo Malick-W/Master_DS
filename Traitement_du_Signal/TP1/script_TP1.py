@@ -69,18 +69,18 @@ file.close()
 # D'une manière générale le plus grand entier relatif positif codé sur n bits sera 2^(n-1)-1. 
 
 # question i:
-# n = 2
-# def u2(t):
-#     s=127.5*math.sin((2**(8*n)/n)*440*2*math.pi*t)+127.5 #127.5 est 255/2
-#     return (int(s).to_bytes(2,byteorder="big",signed='False'))
+n = 2
+def u2(t):
+   s=16383.5*math.sin(440*2*math.pi*t)+16383.5
+   return (int(s).to_bytes(2,byteorder="big"))
     
-# hz = 44100
-# r = [u2(t) for t in np.linspace(0,1,hz)]
+hz = 44100
+r = [u2(t) for t in np.linspace(0,1,hz)]
 
-# file=open('la_16bits.pcm','wb')
-# for j in r:
-#     file.write(j)
-# file.close()
+file=open('la_16bits.pcm','wb')
+for j in r:
+   file.write(j)
+file.close()
 
 
 
@@ -123,7 +123,7 @@ file.close()
 def u5(t):
 	s = math.sin(392*2*math.pi*t)
 	s=127.5*s+127.5 #127.5 == 255/2
-	return(int(s).to_bytes(1,byteorder="big"))  
+	return(int(s/2).to_bytes(1,byteorder="big"))  
 
 hz = 44100
 
@@ -166,7 +166,7 @@ def simult(t,phi):
 	return(int(s).to_bytes(2,byteorder="big"))  
 
 hz = 44100
-phi = math.pi # les deux fonctions s'annulent avec cette phase.
+phi = math.pi +1# les deux fonctions s'annulent avec cette phase.
 r = [simult(t,phi) for t in np.linspace(0,1,hz)]
 
 file=open('la_phase.pcm','wb')
@@ -174,7 +174,7 @@ for j in r:
 	file.write(j)
 file.close()
 
-
+# ~ cvlc --demux=rawaud --rawaud-channels 1 --rawaud-samerate 44100 --rawaud-fourcc "s16b" la_16bits.pcm 
 
 
 ############################Exercice 3###############################
