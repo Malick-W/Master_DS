@@ -24,7 +24,7 @@ def U(t, freq):
 hz = 44100
 freq = 440
 r_1 = [U(t,freq) for t in np.linspace(0,1,hz)]
-r_2 = [U(t,(3*freq)/2) for t in np.linspace(0,1,hz)]
+r_2 = [U(t,(2*freq)/3) for t in np.linspace(0,1,hz)]
 r= r_1 + r_2
 
 file=open('la_1.pcm','wb')
@@ -34,9 +34,9 @@ file.close()
 
 
 #question b:
-#pour monter de 7 demi-tons, on multipli la fréquence par r
-r = 1.05946
-r_3 = [U(t,freq*7*r) for t in np.linspace(0,1,hz)]
+#pour monter de 7 demi-tons, on multipli la fréquence par r**7
+demi_ton = (2)**(1/12)
+r_3 = [U(t,freq*demi_ton**7) for t in np.linspace(0,1,hz)]
 r= r_1 + r_3
 
 file=open('la_2.pcm','wb')
@@ -45,7 +45,7 @@ for j in r:
 file.close()
 
 
-############################Exercice 1###############################
+############################Exercice 2###############################
 # lien: https://www.deleze.name/marcel/physique/musique/Frequences.pdf
 
 #question a:
@@ -54,7 +54,35 @@ file.close()
 #Marcel Delèze présente une formule mathématique pour trouver la fréquence des notes 
 #en partant du diapason 440. Cette formule fonctionne pour la gamme tempérée uniquement.                                       
 
-piano = np.ones((12,8))
-piano[8,:] = [440*i for i in range(8) if ]
+#question a:
+
+piano = np.zeros(88)
+piano[38]=440
+La=440
+
+demi_ton = (2)**(1/12)
+
+for i in range(len(piano)):
+   if i > 39 :
+      piano[i] = La*demi_ton**(39-i)
+   if i < 39 :
+      piano[i] = La*(demi_ton**(39-i))
+
+piano.sort()
+piano = list(piano[1:])
+
+# question b:
+hz = 44100
+
+r = []
+for freq in piano:
+   r += [U(t,freq) for t in np.linspace(0,0.5,hz)]
+
+file=open('piano.pcm','wb')
+for j in r:
+    file.write(j)
+file.close()
+
+
 
 

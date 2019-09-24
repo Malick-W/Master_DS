@@ -54,8 +54,7 @@ file.close()
 
 
 # question g:
-#cvlc --demux=rawaud --rawaud-channels 1 --rawaud-samplerate 44100 --rawaud-fourcc "u8  " la.pcm
-
+#cvlc --demux=rawaud --rawaud-channels 1 --rawaud-samplerate 44100 --rawaud-fourcc "u8  " la2.pcm
 
 # question h:
 # Un entier relatif positif ou nul sera représenté en binaire (base 2) comme un entier naturel,
@@ -71,7 +70,7 @@ file.close()
 # question i:
 n = 2
 def u2(t):
-   s=16383.5*math.sin(440*2*math.pi*t)+16383.5
+   s=16383.5*2*math.sin(440*2*math.pi*t)+16383.5*2
    return (int(s).to_bytes(2,byteorder="big"))
     
 hz = 44100
@@ -123,18 +122,18 @@ file.close()
 def u5(t):
 	s = math.sin(392*2*math.pi*t)
 	s=127.5*s+127.5 #127.5 == 255/2
-	return(int(s/2).to_bytes(1,byteorder="big"))  
+	return(int(s).to_bytes(1,byteorder="big"))  
 
 hz = 44100
 
-r = [u(t) + u5(t) for t in np.linspace(0,1,hz)]
+r = [(u(t) + u5(t))/2 for t in np.linspace(0,1,hz)]
 
 file=open('la_sol.pcm','wb')
 for j in r:
 	file.write(j)
 file.close()
 
-
+## question personnelle
 # La fréquence de chaque note est précisée dans le tableau ci-dessous:
 # Do1       Ré     Mi     Fa      Sol     La      Si      Do2
 # 262Hz   294Hz  330Hz   349Hz   392Hz   440Hz   494Hz   523Hz
@@ -165,8 +164,10 @@ def simult(t,phi):
 	s =16383.5*s+16383.5*2 #16383.5 = (2^15-1)/2
 	return(int(s).to_bytes(2,byteorder="big"))  
 
+#question e:
+
 hz = 44100
-phi = math.pi +1# les deux fonctions s'annulent avec cette phase.
+phi = math.pi# les deux fonctions s'annulent avec cette phase.
 r = [simult(t,phi) for t in np.linspace(0,1,hz)]
 
 file=open('la_phase.pcm','wb')
