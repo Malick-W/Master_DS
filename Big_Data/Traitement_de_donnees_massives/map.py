@@ -1,0 +1,1 @@
+#!/usr/bin/env python3# -*- coding: utf-8 -*-import sysimport remot=re.compile("\w+")lettre=re.compile("\w")for ligne in sys.stdin:   cle, valeur = ligne.split('\n', 1))
