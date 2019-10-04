@@ -151,27 +151,30 @@ construireGen = function(){
 # representation graphique de la genealogie a l'aide de igraph (noeuds = individus, fleches = liens)
 # in : genealogie (matrice de n lignes et 4 colonnes)
 # out : rien
-
 # https://f.hypotheses.org/wp-content/blogs.dir/2996/files/2017/02/visualiseR.pdf
+
+couleur = rainbow(5, alpha=.5) #  5 couleurs chaudes, transparent
+
+
 
 representerGen = function(GenMax){
   nrel = nrow(GenMax$Gen)
   
   # jouer sur les couleurs, les formes, ...
-  Grp = graph.empty(directed=TRUE) + vertices(GenMax$Gen[, 1], color="red", shape="circle", size=10, label.cex=0.7, label.color="blue")
+  Grp = graph.empty(directed=TRUE) + vertices(GenMax$Gen[, 1], color="blue", shape="circle", size=10, label.cex=0.7, label.color="blue")
   
   # ajouter les fleches munies d'une approximation de la proba du lien a 3 ou 4 chiffres
+  # for (i in 1:n){
+  #   Grp = Grp +
+  # }
   
-  plot(Grp, vertex.size = 20, vertex.color="orange",
-       edge.arrow.size=.4, edge.curved=.4)
+  
+  plot(Grp)
 }
 
 
 library("igraph")
 GenMax = construireGen()
 representerGen(GenMax)
-
-
-
 
 
