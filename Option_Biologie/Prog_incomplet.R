@@ -1,8 +1,15 @@
+path = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
+DF = read.csv(file = path)
+MatIndiv = data.matrix(DF)
+n = 16
+ncol = 4*4+3
+
+
 
 # commencer par creer un jeu de donnees virtuel de petite taille
-n = 4
-ncol = 4*4+3
-MatIndiv = matrix(0, nrow=n, ncol=ncol)
+# n = 4
+# ncol = 4*4+3
+# MatIndiv = matrix(0, nrow=n, ncol=ncol)
 
 MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,80,80,0,0,110,120,0,0,2,1,1)
 MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,80,80,0,0,120,130,0,0,2,1,2)
@@ -147,34 +154,44 @@ construireGen = function(){
   return(list(Gen = Gen, lLik = sum(Gen[, 4])))
 }
 
+library("igraph")
 
+GenMax = construireGen()
+GenMax$Gen
+
+
+
+
+
+
+
+
+
+############################################################################################
 # representation graphique de la genealogie a l'aide de igraph (noeuds = individus, fleches = liens)
 # in : genealogie (matrice de n lignes et 4 colonnes)
 # out : rien
 # https://f.hypotheses.org/wp-content/blogs.dir/2996/files/2017/02/visualiseR.pdf
 
-couleur = rainbow(5, alpha=.5) #  5 couleurs chaudes, transparent
-
-
-
-representerGen = function(GenMax){
-  nrel = nrow(GenMax$Gen)
-  
-  # jouer sur les couleurs, les formes, ...
-  Grp = graph.empty(directed=TRUE) + vertices(GenMax$Gen[, 1], color="blue", shape="circle", size=10, label.cex=0.7, label.color="blue")
-  
-  # ajouter les fleches munies d'une approximation de la proba du lien a 3 ou 4 chiffres
-  # for (i in 1:n){
-  #   Grp = Grp +
-  # }
-  
-  
-  plot(Grp)
-}
-
-
-library("igraph")
-GenMax = construireGen()
-representerGen(GenMax)
+# couleur = rainbow(5, alpha=.5) #  5 couleurs chaudes, transparent
+# 
+# representerGen = function(GenMax){
+#   nrel = nrow(GenMax$Gen)
+# 
+#   # jouer sur les couleurs, les formes, ...
+# Grp = graph.empty(directed=TRUE) + vertices(GenMax$Gen[, 1], color=couleur, shape="circle", size=10, label.cex=0.7, label.color="blue")
+# 
+# #   # ajouter les fleches munies d'une approximation de la proba du lien a 3 ou 4 chiffres
+#     for (i in 1:n){
+#       Grp = Grp +
+#         }
+# 
+# #
+#   plot(Grp)
+#   }
+# 
+# library("igraph")
+# GenMax = construireGen()
+# representerGen(GenMax)
 
 
