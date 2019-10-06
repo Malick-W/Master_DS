@@ -1,22 +1,21 @@
-path = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
-DF = read.csv(file = path)
-MatIndiv = data.matrix(DF)
-n = 16
-ncol = 4*4+3
-
+# path = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
+# DF = read.csv(file = path)
+# MatIndiv = data.matrix(DF)
+# n = 16
+# ncol = 4*4+3
 
 
 ##commencer par creer un jeu de donnees virtuel de petite taille
-# n = 6
-# ncol = 4*4+3
-# MatIndiv = matrix(0, nrow=n, ncol=ncol)
-# 
-# MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,40,80,0,0,110,120,0,0,2,1,1)
-# MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,70,80,0,0,120,130,0,0,2,1,2)
-# MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
-# MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
-# MatIndiv[5, ] = c(10,20,0,0,60,50,0,0,70,80,0,0,130,120,0,0,2,3,5)
-# MatIndiv[6, ] = c(10,20,0,0,60,40,0,0,70,40,0,0,120,120,0,0,2,3,6)
+n = 6
+ncol = 4*4+3
+MatIndiv = matrix(0, nrow=n, ncol=ncol)
+
+MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,40,80,0,0,110,120,0,0,2,1,1)
+MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,70,80,0,0,120,130,0,0,2,1,2)
+MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
+MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
+MatIndiv[5, ] = c(10,20,0,0,60,50,0,0,70,80,0,0,130,120,0,0,2,3,5)
+MatIndiv[6, ] = c(10,20,0,0,60,40,0,0,70,40,0,0,120,120,0,0,2,3,6)
 
 # compte le nombre d'enfants virtuels de meme genotype que l'enfant de reference
 # in : enfants virtuels (matrice avec un genotype sur chaque ligne), genotype de l'enfant (vecteur)
@@ -129,6 +128,9 @@ recupParentsMax = function(e){
   if (pmax != 0){
     IndMax = which(MatProbasParents == pmax, arr.ind = TRUE)
     
+    # si plusieurs couple de parents ont la même probabilité, on choisit aléatoirement un couple 
+    IndMax = IndMax[sample(1:nrow(IndMax), 1),]
+      
     ParentsMax[4] = log(pmax)
     ParentsMax[2] = round(IndMax[1])
     ParentsMax[3] = round(IndMax[2])
@@ -167,7 +169,7 @@ nodes = data.frame(id=GenMax$Gen[,1],
 links = data.frame()
 
 for (i in 1:n) {
-  if (GenMax$Gen[i,4] != 0){
+  if (GenMax$Gen[i,2] != 0 & GenMax$Gen[i,3] != 0){
     link1 = data.frame(from=GenMax$Gen[i,2],
                        to=GenMax$Gen[i,1],
                        weight=round(exp(GenMax$Gen[i,4]),2))
@@ -185,7 +187,7 @@ library('RColorBrewer')
 nombre_de_generation = max(MatIndiv[,18])
 #colrs = rainbow(nombre_de_generation, alpha=.5)
 
-colrs = brewer.pal(nombre_de_generation, "Set2")
+colrs = brewer.pal(nombre_de_generation, "Set3")
 
 # Attribuer des couleurs selon le type de média
 V(net)$color = colrs[V(net)$gen]
@@ -193,23 +195,33 @@ V(net)$size = 12
 #Fonte : 1 normal, 2 gras, 3, italique, 4 italique gras, 5 symbole
 V(net)$label.font = 2
 
+V(net)$label.color = "black"
+V(net)$label.family = "Times"
+
 
 # Épaisseur des liens fonction de l'intensité
-E(net)$width = E(net)$weight*12
+E(net)$width = 1+E(net)$weight*5
 
 # Changer la taille des flèches et la couleur des liens
-E(net)$arrow.size = .15 #Taille des fléches, 1 par défaut
-E(net)$arrow.width = 1 #Épaisseur des flèches, 1 par défaut
+E(net)$arrow.size = .05 #Taille des fléches, 1 par défaut
+E(net)$arrow.width = 3 #Épaisseur des flèches, 1 par défaut
 E(net)$edge.lty = 2 #Type de ligne
 E(net)$label = E(net)$weight #Vecteur de type caractère utilisé pour nommer les liens
 E(net)$edge.label.family = "Helvetica" #Police des labels (e.g.“Times”, “Helvetica”)
+# E(net)$label.color = "black"
 E(net)$edge.label.cex = 0.1 #Taille de la police pour les labels des liens
 E(net)$edge.color = "gray80"
-E(net)$width = 1+E(net)$weight*6
 E(net)$edge.label = E(net)$weight
 
 plot(net, main ="Représentation de la genealogie")
 
+legend(x = "topleft", title="Génération", legend = 1:nombre_de_generation, pch=21,
+       text.font=4, col="#777777", pt.bg=colrs, pt.cex=2, cex=.5, bty="n", ncol=1)
+
+
+
+
+# legend('topleft',legend=levels(sizeCut),pt.cex=scaled,col='black',pch=21, pt.bg='orange')
 # https://f.hypotheses.org/wp-content/blogs.dir/2996/files/2017/02/visualiseR.pdf
 
 ############################################################################################
