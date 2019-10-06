@@ -1,22 +1,39 @@
+######### Données de Matiss à vérifier
 # path = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
 # DF = read.csv(file = path)
 # MatIndiv = data.matrix(DF)
 # n = 16
 # ncol = 4*4+3
 
+######## commencer par creer un jeu de donnees virtuel de petite taille
+# n = 6
+# ncol = 4*4+3
+# MatIndiv = matrix(0, nrow=n, ncol=ncol)
+# 
+# MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,40,80,0,0,110,120,0,0,2,1,1)
+# MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,70,80,0,0,120,130,0,0,2,1,2)
+# MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
+# MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
+# MatIndiv[5, ] = c(10,20,0,0,60,50,0,0,70,80,0,0,130,120,0,0,2,3,5)
+# MatIndiv[6, ] = c(10,20,0,0,60,40,0,0,70,40,0,0,120,120,0,0,2,3,6)
 
-##commencer par creer un jeu de donnees virtuel de petite taille
-n = 6
+#######################################################################################
+###### on simule un jeu de données plus grand
+n = 30
 ncol = 4*4+3
+nombre_de_generation = 8
+n_al = 4
 MatIndiv = matrix(0, nrow=n, ncol=ncol)
 
-MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,40,80,0,0,110,120,0,0,2,1,1)
-MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,70,80,0,0,120,130,0,0,2,1,2)
-MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
-MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
-MatIndiv[5, ] = c(10,20,0,0,60,50,0,0,70,80,0,0,130,120,0,0,2,3,5)
-MatIndiv[6, ] = c(10,20,0,0,60,40,0,0,70,40,0,0,120,120,0,0,2,3,6)
+for (i in 1:n) {
+    MatIndiv[i, ] = c(sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+                      2, sample(1:nombre_de_generation,1), i)
+    }
 
+##########################################################################################
 # compte le nombre d'enfants virtuels de meme genotype que l'enfant de reference
 # in : enfants virtuels (matrice avec un genotype sur chaque ligne), genotype de l'enfant (vecteur)
 # out : le nombre d'enfants virtuels correspondant
