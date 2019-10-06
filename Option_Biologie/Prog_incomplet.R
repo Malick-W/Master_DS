@@ -6,16 +6,17 @@ ncol = 4*4+3
 
 
 
-# commencer par creer un jeu de donnees virtuel de petite taille
-# n = 4
+##commencer par creer un jeu de donnees virtuel de petite taille
+# n = 6
 # ncol = 4*4+3
 # MatIndiv = matrix(0, nrow=n, ncol=ncol)
-
-MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,80,80,0,0,110,120,0,0,2,1,1)
-MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,80,80,0,0,120,130,0,0,2,1,2)
-MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
-MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
-
+# 
+# MatIndiv[1, ] = c(10,10,0,0,40,50,0,0,40,80,0,0,110,120,0,0,2,1,1)
+# MatIndiv[2, ] = c(10,20,0,0,60,60,0,0,70,80,0,0,120,130,0,0,2,1,2)
+# MatIndiv[3, ] = c(20,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,1,3)
+# MatIndiv[4, ] = c(10,20,0,0,50,60,0,0,80,80,0,0,110,120,0,0,2,2,4)
+# MatIndiv[5, ] = c(10,20,0,0,60,50,0,0,70,80,0,0,130,120,0,0,2,3,5)
+# MatIndiv[6, ] = c(10,20,0,0,60,40,0,0,70,40,0,0,120,120,0,0,2,3,6)
 
 # compte le nombre d'enfants virtuels de meme genotype que l'enfant de reference
 # in : enfants virtuels (matrice avec un genotype sur chaque ligne), genotype de l'enfant (vecteur)
@@ -157,41 +158,61 @@ construireGen = function(){
 library("igraph")
 
 GenMax = construireGen()
-GenMax$Gen
 
 
 
+nodes = data.frame(id=GenMax$Gen[,1],
+                   gen=MatIndiv[,18])
+
+links = data.frame()
+
+for (i in 1:n) {
+  if (GenMax$Gen[i,4] != 0){
+    link1 = data.frame(from=GenMax$Gen[i,2],
+                       to=GenMax$Gen[i,1],
+                       weight=round(exp(GenMax$Gen[i,4]),2))
+    link2 = data.frame(from=GenMax$Gen[i,3],
+                       to=GenMax$Gen[i,1],
+                       weight=round(exp(GenMax$Gen[i,4]),2))
+    links = rbind(links,link1,link2)
+  }
+}
+
+net = graph_from_data_frame(d=links, vertices=nodes, directed=TRUE)
+net
+
+library('RColorBrewer')
+nombre_de_generation = max(MatIndiv[,18])
+#colrs = rainbow(nombre_de_generation, alpha=.5)
+
+colrs = brewer.pal(nombre_de_generation, "Set2")
+
+# Attribuer des couleurs selon le type de média
+V(net)$color = colrs[V(net)$gen]
+V(net)$size = 12
+#Fonte : 1 normal, 2 gras, 3, italique, 4 italique gras, 5 symbole
+V(net)$label.font = 2
 
 
+# Épaisseur des liens fonction de l'intensité
+E(net)$width = E(net)$weight*12
 
+# Changer la taille des flèches et la couleur des liens
+E(net)$arrow.size = .15 #Taille des fléches, 1 par défaut
+E(net)$arrow.width = 1 #Épaisseur des flèches, 1 par défaut
+E(net)$edge.lty = 2 #Type de ligne
+E(net)$label = E(net)$weight #Vecteur de type caractère utilisé pour nommer les liens
+E(net)$edge.label.family = "Helvetica" #Police des labels (e.g.“Times”, “Helvetica”)
+E(net)$edge.label.cex = 0.1 #Taille de la police pour les labels des liens
+E(net)$edge.color = "gray80"
+E(net)$width = 1+E(net)$weight*6
+E(net)$edge.label = E(net)$weight
 
+plot(net, main ="Représentation de la genealogie")
 
-
-############################################################################################
-# representation graphique de la genealogie a l'aide de igraph (noeuds = individus, fleches = liens)
-# in : genealogie (matrice de n lignes et 4 colonnes)
-# out : rien
 # https://f.hypotheses.org/wp-content/blogs.dir/2996/files/2017/02/visualiseR.pdf
 
-# couleur = rainbow(5, alpha=.5) #  5 couleurs chaudes, transparent
-# 
-# representerGen = function(GenMax){
-#   nrel = nrow(GenMax$Gen)
-# 
-#   # jouer sur les couleurs, les formes, ...
-# Grp = graph.empty(directed=TRUE) + vertices(GenMax$Gen[, 1], color=couleur, shape="circle", size=10, label.cex=0.7, label.color="blue")
-# 
-# #   # ajouter les fleches munies d'une approximation de la proba du lien a 3 ou 4 chiffres
-#     for (i in 1:n){
-#       Grp = Grp +
-#         }
-# 
-# #
-#   plot(Grp)
-#   }
-# 
-# library("igraph")
-# GenMax = construireGen()
-# representerGen(GenMax)
+############################################################################################
+
 
 
