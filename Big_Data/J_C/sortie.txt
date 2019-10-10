@@ -1,0 +1,28 @@
+
+Bonjour Malick
+
+
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-133-8fbe4ae84dae>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mgetcwd[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;31mNameError[0m: name 'getcwd' is not defined
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mNameError[0m                                 Traceback (most recent call last)
+[0;32m<ipython-input-134-80c72379bb65>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0mgetcwd[0m[0;34m([0m[0;34m)[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;31mNameError[0m: name 'getcwd' is not defined
+
+[0;31m---------------------------------------------------------------------------[0m
+[0;31mAttributeError[0m                            Traceback (most recent call last)
+[0;32m<ipython-input-135-fd68b4b03154>[0m in [0;36m<module>[0;34m[0m
+[0;32m----> 1[0;31m [0msys[0m[0;34m.[0m[0mstdout[0m [0;34m=[0m [0msys[0m[0;34m.[0m[0m__stdout___[0m[0;34m[0m[0;34m[0m[0m
+[0m
+[0;31mAttributeError[0m: module 'sys' has no attribute '__stdout___'
+
+Bonjour Malick
+
