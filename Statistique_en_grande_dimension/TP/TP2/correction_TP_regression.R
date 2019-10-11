@@ -1,6 +1,3 @@
-# CORRECTION TP REGRESSION PENALISEE
-
-install.packages("glmnet")
 library(glmnet)
 
 
@@ -241,3 +238,4 @@ SelEN4 = predict(LambdaEN4$glmnet.fit, TrainSetX, s=bestLambdaEN4, type="nonzero
 
 ## Pour faire mieux, chercher d'autres techniques
 ## Sparse PCA/Groupe Lasso/Sparse Clustering....
+
