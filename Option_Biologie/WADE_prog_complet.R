@@ -1,9 +1,10 @@
 ######### Données de Matiss à vérifier
-# path = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
-# DF = read.csv(file = path)
-# MatIndiv = data.matrix(DF)
-# n = 16
-# ncol = 4*4+3
+path_Home = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
+path = "/users/mmath/wade/Bureau/Master_DS/Option_Biologie/test16.csv"
+DF = read.csv(file = path)
+MatIndiv = data.matrix(DF)
+n = 16
+ncol = 4*4+3
 
 ######## commencer par creer un jeu de donnees virtuel de petite taille
 # n = 6
@@ -19,19 +20,19 @@
 
 #######################################################################################
 ###### on simule un jeu de données plus grand
-n = 30
-ncol = 4*4+3
-nombre_de_generation = 8
-n_al = 4
-MatIndiv = matrix(0, nrow=n, ncol=ncol)
-
-for (i in 1:n) {
-    MatIndiv[i, ] = c(sample(1:n_al,1), sample(1:n_al,1), 0, 0,
-                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
-                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
-                      sample(1:n_al,1), sample(1:n_al,1), 0, 0,
-                      2, sample(1:nombre_de_generation,1), i)
-    }
+# n = 30
+# ncol = 4*4+3
+# nombre_de_generation = 8
+# n_al = 4
+# MatIndiv = matrix(0, nrow=n, ncol=ncol)
+# 
+# for (i in 1:n) {
+#     MatIndiv[i, ] = c(sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+#                       sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+#                       sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+#                       sample(1:n_al,1), sample(1:n_al,1), 0, 0,
+#                       2, sample(1:nombre_de_generation,1), i)
+    # }
 
 ##########################################################################################
 # compte le nombre d'enfants virtuels de meme genotype que l'enfant de reference
@@ -220,8 +221,8 @@ V(net)$label.family = "Times"
 E(net)$width = 1+E(net)$weight*5
 
 # Changer la taille des flèches et la couleur des liens
-E(net)$arrow.size = .05 #Taille des fléches, 1 par défaut
-E(net)$arrow.width = 3 #Épaisseur des flèches, 1 par défaut
+E(net)$arrow.size = .3 #Taille des fléches, 1 par défaut
+E(net)$arrow.width = 1 #Épaisseur des flèches, 1 par défaut
 E(net)$edge.lty = 2 #Type de ligne
 E(net)$label = E(net)$weight #Vecteur de type caractère utilisé pour nommer les liens
 E(net)$edge.label.family = "Helvetica" #Police des labels (e.g.“Times”, “Helvetica”)
