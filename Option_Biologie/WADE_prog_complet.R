@@ -1,9 +1,9 @@
 ######### Données de Matiss à vérifier
-path_Home = "/home/malick/Bureau/Master_DS/Option_Biologie/test16.csv"
-path = "/users/mmath/wade/Bureau/Master_DS/Option_Biologie/test16.csv"
-DF = read.csv(file = path)
+path_Home = "/home/malick/Bureau/Master_DS/Option_Biologie/Pop2x.csv"
+path = "/home/malick/Bureau/Master_DS/Option_Biologie/Pop2x.csv"
+DF = read.csv2(file = path)
 MatIndiv = data.matrix(DF)
-n = 16
+n = nrow(MatIndiv)
 ncol = 4*4+3
 
 ######## commencer par creer un jeu de donnees virtuel de petite taille
