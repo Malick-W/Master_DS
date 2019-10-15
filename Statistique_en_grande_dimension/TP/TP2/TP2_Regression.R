@@ -1,10 +1,10 @@
 ### Statistique en Grande Dimension et Apprentissage - TP Chapitre 3 ###
 
-set.seed(100)
+set.seed(314)
 
 # on importe le package 'glmnet' de Friedman, Hastie, Simon et Tibshirani
 library(glmnet)
-
+library(ggplot2) # pour des grpahes plus jolies
 
 ### Exercice 1 
 
@@ -210,102 +210,105 @@ text(PCALeuk$x[, 2], PCALeuk$x[, 3], labels=df[,1], cex=0.7, pos = 3, col = 2+Y)
 
 ### Question 6: la Régression Logistique pénalisée.
 
-# approche standard non consistante car p>> n 
-classic_glm=glm(Y ~ X[,1:73]-1, family = binomial(link = "logit")) # X-1 means 'X with no intercept'
-classic_glm
+## a) 
+classic_glm=glm(Y ~ X[,1:73]-1, family = binomial(link = "logit")) 
+# X-1 means 'X with no intercept':::::: les données sont centrées => pas d'intercepte
+summary(classic_glm)
 
-## A partir de maintenant, Régression pénalisée
-## On coupe l'échantillon en deux :2/3 (Apprentissage) 1/3 (Validation)
-IndTrain = sample(1:n)[1:(2*n/3)] ## Découpage aléatoire
-TrainSetX = X[IndTrain,]
-TrainSetY = Y[IndTrain]
-IndVal = setdiff(1:n, IndTrain)
-ValSetX = X[IndVal,]
-ValSetY = Y[IndVal]
-
-# Apprentissage via regression logistique en mode Lasso, Ridge, Elastic-Net
-TrainLasso <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=1)
-TrainRidge <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=0)
-TrainEN1 <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=0.1)
-TrainEN2 <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=0.25)
-TrainEN3 <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=0.5)
-TrainEN4 <- glmnet(TrainSetX, TrainSetY, family="binomial", alpha=0.75)
+## b)
+# On découpe aléatoirement l'echantillon: 2/3 pour l'Apprentissage et 1/3 pour la Validation
+n = nrow(X)
+IndTrain = sample(1:n)[1:(2*n/3)] 
+TrainX = X[IndTrain,]
+TrainY = Y[IndTrain]
+IndTest = setdiff(1:n, IndTrain)
+TestX = X[IndTest,]
+TestY = Y[IndTest]
 
 
-# Affichage chemins de régularisation
+## c)&d) Lasso, Ridge, Elastic-Net
+TrainLasso = glmnet(TrainX, TrainY, alpha=1, family="binomial") # type="auc"
+TrainRidge = glmnet(TrainX, TrainY, alpha=0, family="binomial")
+TrainEN1 = glmnet(TrainX, TrainY, alpha=0.25, family="binomial")
+TrainEN2 = glmnet(TrainX, TrainY, alpha=0.5, family="binomial")
+TrainEN3 = glmnet(TrainX, TrainY, alpha=0.75, family="binomial")
+
+
+## e) 
+summary(TrainLasso)
+
+
+## f) chemins de régularisation
+# Error in plot.new() : figure margins too large ==> on sauvegarde les plot
 dev.off()
-png(file = "chemins_regula_leukemia.png", width = 800, height = 700)
+png(file = "chemins_Exercice2_f).png", width = 800, height = 700)
 par(mfrow=c(3,2))
 plot(TrainLasso)
 plot(TrainRidge) 
 plot(TrainEN1)
 plot(TrainEN2)
 plot(TrainEN3)
-plot(TrainEN4)
 dev.off()
 
-## Extraction d'un coefficient
-v=coef(TrainLasso,s=0.043300)
-which(v!=0)
-v[which(v!=0)]
-## Validation croisée pour le choix optimal du Lambda
-LambdaLasso = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=1)
-LambdaRidge = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=0)
-LambdaEN1 = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=0.1)
-LambdaEN2 = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=0.25)
-LambdaEN3 = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=0.5)
-LambdaEN4 = cv.glmnet(TrainSetX, TrainSetY, family="binomial", type.measure="class", alpha=0.75)
 
-# best lambda
-bestLambdaLasso = LambdaLasso$lambda.min
-bestLambdaRidge = LambdaRidge$lambda.min
-bestLambdaEN1 = LambdaEN1$lambda.min
-bestLambdaEN2 = LambdaEN2$lambda.min
-bestLambdaEN3 = LambdaEN3$lambda.min
-bestLambdaEN4 = LambdaEN4$lambda.min
+## g)  Validation croisée pour le choix optimal du Lambda
+LambdaLasso = cv.glmnet(TrainX, TrainY, family="binomial", type.measure="class", alpha=1)
+LambdaRidge = cv.glmnet(TrainX, TrainY, family="binomial", type.measure="class", alpha=0)
+LambdaEN1 = cv.glmnet(TrainX, TrainY, family="binomial", type.measure="class", alpha=0.25)
+LambdaEN2 = cv.glmnet(TrainX, TrainY, family="binomial", type.measure="class", alpha=0.5)
+LambdaEN3 = cv.glmnet(TrainX, TrainY, family="binomial", type.measure="class", alpha=0.75)
 
-# Naturellement, lambda(Ridge) >> lambda(Lasso) et lambda(Elastic-Net)
-# Evolution de l'erreur de classification avec log(lambda)
-png(file = "validation_croisee_leukemia.png", width = 800, height = 700)
+# Evolution de l'erreur de classification
+png(file = "CV_Exercice2_g).png", width = 800, height = 700)
 par(mfrow=c(3,2))
 plot(LambdaLasso)
 plot(LambdaRidge)
 plot(LambdaEN1)
 plot(LambdaEN2)
 plot(LambdaEN3)
-plot(LambdaEN4)
 dev.off()
 
-# Prédiction sur la partie de l'échantillon laissée de côté
-ValSetYPredLasso = as.numeric(predict(LambdaLasso$glmnet.fit, ValSetX, s=bestLambdaLasso, type="class"))
-ValSetYPredRidge = as.numeric(predict(LambdaRidge$glmnet.fit, ValSetX, s=bestLambdaRidge, type="class"))
-ValSetYPredEN1 = as.numeric(predict(LambdaEN1$glmnet.fit, ValSetX, s=bestLambdaEN1, type="class"))
-ValSetYPredEN2 = as.numeric(predict(LambdaEN2$glmnet.fit, ValSetX, s=bestLambdaEN2, type="class"))
-ValSetYPredEN3 = as.numeric(predict(LambdaEN3$glmnet.fit, ValSetX, s=bestLambdaEN3, type="class"))
-ValSetYPredEN4 = as.numeric(predict(LambdaEN4$glmnet.fit, ValSetX, s=bestLambdaEN4, type="class"))
+
+## h)
+# meilleur lambda pour chaque modéle
+meilleurLambdaLasso = LambdaLasso$lambda.min
+meilleurLambdaRidge = LambdaRidge$lambda.min
+meilleurLambdaEN1 = LambdaEN1$lambda.min
+meilleurLambdaEN2 = LambdaEN2$lambda.min
+meilleurLambdaEN3 = LambdaEN3$lambda.min
+
+#teta pour la meilleure valeure de lambda
+v = coef(TrainLasso, s=meilleurLambdaLasso) 
+v[which(v!=0)]
+
+
+## i)&j)
+# Prédiction sur l'échantillon test avec le meilleur lambda
+PredLasso = as.numeric(predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaLasso, type="class"))
+PredRidge = as.numeric(predict(LambdaRidge$glmnet.fit, TestX, s=meilleurLambdaRidge, type="class"))
+PredEN1 = as.numeric(predict(LambdaEN1$glmnet.fit, TestX, s=meilleurLambdaEN1, type="class"))
+PredEN2 = as.numeric(predict(LambdaEN2$glmnet.fit, TestX, s=meilleurLambdaEN2, type="class"))
+PredEN3 = as.numeric(predict(LambdaEN3$glmnet.fit, TestX, s=meilleurLambdaEN3, type="class"))
+
 
 # Erreur de classification
-sum(abs(ValSetY - ValSetYPredLasso))/24
-sum(abs(ValSetY - ValSetYPredRidge))/24
-sum(abs(ValSetY - ValSetYPredEN1))/24
-sum(abs(ValSetY - ValSetYPredEN2))/24
-sum(abs(ValSetY - ValSetYPredEN4))/24
+nTest = length(IndTest)
+E1 = sum(abs(TestY - PredLasso))/nTest
+E2 = sum(abs(TestY - PredRidge))/nTest
+E3 = sum(abs(TestY - PredEN1))/nTest
+E4 = sum(abs(TestY - PredEN2))/nTest
+E5 = sum(abs(TestY - PredEN3))/nTest
+
+df_Erreur = data.frame(erreur=round(c(E1,E2,E3,E4,E5),3),
+                    row.names=c("Lasso","Ridge", "ElasticNet_0.25","ElasticNet_0.5","ElasticNet_0.75"))
+df_Erreur
+
+#Genes sélectionnés dans chaque modéle
+GenesLasso = predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaLasso, type="nonzero")
+GenesRidge = predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaRidge, type="nonzero")
+GenesEN1 = predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaEN1, type="nonzero")
+GenesEN2 = predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaEN2, type="nonzero")
+GenesEN3 = predict(LambdaLasso$glmnet.fit, TestX, s=meilleurLambdaEN3, type="nonzero")
 
 
-
-# Genes sélectionnés
-SelLasso = predict(LambdaLasso$glmnet.fit, TrainSetX, s=bestLambdaLasso, type="nonzero")
-SelRidge = predict(LambdaRidge$glmnet.fit, TrainSetX, s=bestLambdaRidge, type="nonzero")
-SelEN1 = predict(LambdaEN1$glmnet.fit, TrainSetX, s=bestLambdaEN1, type="nonzero")
-SelEN2 = predict(LambdaEN2$glmnet.fit, TrainSetX, s=bestLambdaEN2, type="nonzero")
-SelEN3 = predict(LambdaEN3$glmnet.fit, TrainSetX, s=bestLambdaEN3, type="nonzero")
-SelEN4 = predict(LambdaEN4$glmnet.fit, TrainSetX, s=bestLambdaEN4, type="nonzero")
-
-# Naturellement, on trouve tous les gènes dans le Ridge 
-
-
-## Pour tirer des conclusions, il faut répéter l'expérience
-
-## Pour faire mieux, chercher d'autres techniques
-## Sparse PCA/Groupe Lasso/Sparse Clustering....
-
+## k) 
