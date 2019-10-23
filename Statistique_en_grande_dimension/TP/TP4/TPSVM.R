@@ -49,14 +49,14 @@ colnames(Z)[p+1]="classe"
 colnames(Z)[1:p]=paste("X", 1:p, sep="")
 Z$classe=as.factor(Z$classe)
 svmex2=svm(classe~.,data=Z,kernel="polynomial")
-svmex2bis=svm(classe~.,data=Z,kernel="polynomial",degree=2)
-png(file = "svmex2.png", width = 800, height = 700)
+svmex2bis=svm(classe~.,data=Z,kernel="polynomial",degree=5)
+#png(file = "svmex2.png", width = 800, height = 700)
 plot(svmex2,data=Z,X2~X1,slice=list(X3=mean(Z$X3)))
 ## Ne fonctionne pas !! Utiliser un noyau de degré pair pour ce problème
-dev.off()
-png(file = "svmex2bis.png", width = 800, height = 700)
+#dev.off()
+#png(file = "svmex2bis.png", width = 800, height = 700)
 plot(svmex2bis,data=Z,X2~X1,slice=list(X3=mean(Z$X3)))
-dev.off()
+#dev.off()
 ## Noyau gaussien
 svmex2tri=svm(classe~.,data=Z)
 
