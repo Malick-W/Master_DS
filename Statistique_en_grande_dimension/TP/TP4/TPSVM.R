@@ -40,7 +40,7 @@ tab
 svmgauss=svm(classe~.,data=Z)
 
 ## Exercice 1 : Exemple 2
-p=3
+p=2
 n=100
 X=matrix(rnorm(n*p),nr=n)
 y=2*(apply(X^2,1,sum)<sqrt(p))-1
@@ -102,6 +102,9 @@ for (i in 4:p){
   liste=cbind(liste,X4=mean$X4)
 }
 ## plot(svmex2Q10,data=Z,X2~X1,slice=liste))
+
+
+
 
 ## Exercice 2 : IRIS
 
